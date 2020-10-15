@@ -504,15 +504,12 @@ void subtract()
 /* analisa e traduz uma expressão */
 
 void expression()
-
 {
 
     if (isAddOp(look))
 
         emit("XOR AX, AX");
-
     else
-
         term();
 
     while (isAddOp(look))
