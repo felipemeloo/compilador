@@ -80,15 +80,15 @@ int main()
 
 {
 
- init();
+    init();
 
-        assignment();
+    assignment();
 
- if (look != '\n')
+    if (look != '\n')
 
-  expected("NewLine");
+        expected("NewLine");
 
- return 0;
+    return 0;
 
 }
 
@@ -100,9 +100,9 @@ void init()
 
 {
 
- nextChar();
+    nextChar();
 
-        skipWhite();
+    skipWhite();
 
 }
 
@@ -114,7 +114,7 @@ void nextChar()
 
 {
 
- look = getchar();
+    look = getchar();
 
 }
 
@@ -126,17 +126,17 @@ void error(char *fmt, ...)
 
 {
 
- va_list args;
+    va_list args;
 
- fputs("Error: ", stderr);
+    fputs("Error: ", stderr);
 
- va_start(args, fmt);
+    va_start(args, fmt);
 
- vfprintf(stderr, fmt, args);
+    vfprintf(stderr, fmt, args);
 
- va_end(args);
+    va_end(args);
 
- fputc('\n', stderr);
+    fputc('\n', stderr);
 
 }
 
@@ -148,19 +148,19 @@ void fatal(char *fmt, ...)
 
 {
 
- va_list args;
+    va_list args;
 
- fputs("Error: ", stderr);
+    fputs("Error: ", stderr);
 
- va_start(args, fmt);
+    va_start(args, fmt);
 
- vfprintf(stderr, fmt, args);
+    vfprintf(stderr, fmt, args);
 
- va_end(args);
+    va_end(args);
 
- fputc('\n', stderr);
+    fputc('\n', stderr);
 
- exit(1);
+    exit(1);
 
 }
 
@@ -172,19 +172,19 @@ void expected(char *fmt, ...)
 
 {
 
- va_list args;
+    va_list args;
 
- fputs("Error: ", stderr);
+    fputs("Error: ", stderr);
 
- va_start(args, fmt);
+    va_start(args, fmt);
 
- vfprintf(stderr, fmt, args);
+    vfprintf(stderr, fmt, args);
 
- va_end(args);
+    va_end(args);
 
- fputs(" expected!\n", stderr);
+    fputs(" expected!\n", stderr);
 
- exit(1);
+    exit(1);
 
 }
 
@@ -196,9 +196,9 @@ void skipWhite()
 
 {
 
- while (look == ' ' || look == '\t')
+    while (look == ' ' || look == '\t')
 
-  nextChar();
+        nextChar();
 
 }
 
@@ -210,13 +210,13 @@ void match(char c)
 
 {
 
- if (look != c)
+    if (look != c)
 
-  expected("'%c'", c);
+        expected("'%c'", c);
 
- nextChar();
+    nextChar();
 
- skipWhite();
+    skipWhite();
 
 }
 
@@ -228,27 +228,28 @@ void getName(char *name)
 
 {
 
-        int i;
+    int i;
 
- if (!isalpha(look))
+    if (!isalpha(look))
 
-  expected("Name");
+        expected("Name");
 
- for (i = 0; isalnum(look); i++) {
+    for (i = 0; isalnum(look); i++)
+    {
 
-  if (i >= MAXNAME)
+        if (i >= MAXNAME)
 
-   fatal("Identifier too long!");
+            fatal("Identifier too long!");
 
-  name[i] = toupper(look);
+        name[i] = toupper(look);
 
-  nextChar();
+        nextChar();
 
- }
+    }
 
- name[i] = '\0';
+    name[i] = '\0';
 
- skipWhite();
+    skipWhite();
 
 }
 
@@ -260,27 +261,28 @@ void getNum(char *num)
 
 {
 
-        int i;
+    int i;
 
- if (!isdigit(look))
+    if (!isdigit(look))
 
-  expected("Integer");
+        expected("Integer");
 
- for (i = 0; isdigit(look); i++) {
+    for (i = 0; isdigit(look); i++)
+    {
 
-  if (i >= MAXNUM)
+        if (i >= MAXNUM)
 
-   fatal("Integer too long!");
+            fatal("Integer too long!");
 
-  num[i] = look;
+        num[i] = look;
 
-  nextChar();
+        nextChar();
 
- }
+    }
 
- num[i] = '\0';
+    num[i] = '\0';
 
- skipWhite();
+    skipWhite();
 
 }
 
@@ -292,17 +294,17 @@ void emit(char *fmt, ...)
 
 {
 
- va_list args;
+    va_list args;
 
- putchar('\t');
+    putchar('\t');
 
- va_start(args, fmt);
+    va_start(args, fmt);
 
- vprintf(fmt, args);
+    vprintf(fmt, args);
 
- va_end(args);
+    va_end(args);
 
- putchar('\n');
+    putchar('\n');
 
 }
 
@@ -314,7 +316,7 @@ int isAddOp(char c)
 
 {
 
-        return (c == '+' || c == '-');
+    return (c == '+' || c == '-');
 
 }
 
@@ -326,21 +328,23 @@ void ident()
 
 {
 
-        char name[MAXNAME+1];
+    char name[MAXNAME+1];
 
-        getName(name);
+    getName(name);
 
-        if (look == '(') {
+    if (look == '(')
+    {
 
-                match('(');
+        match('(');
 
-                match(')');
+        match(')');
 
-                emit("CALL %s", name);
+        emit("CALL %s", name);
 
-        } else
+    }
+    else
 
-                emit("MOV AX, [%s]", name);
+        emit("MOV AX, [%s]", name);
 
 }
 
@@ -352,27 +356,32 @@ void factor()
 
 {
 
-        char num[MAXNUM+1];
+    char num[MAXNUM+1];
 
-        if (look == '(') {
+    if (look == '(')
+    {
 
-                match('(');
+        match('(');
 
-                expression();
+        expression();
 
-                match(')');
+        match(')');
 
-        } else if(isalpha(look)) {
+    }
+    else if(isalpha(look))
+    {
 
-                ident();
+        ident();
 
- } else {
+    }
+    else
+    {
 
-                getNum(num);
+        getNum(num);
 
-         emit("MOV AX, %s", num);
+        emit("MOV AX, %s", num);
 
-        }
+    }
 
 }
 
@@ -384,13 +393,13 @@ void multiply()
 
 {
 
-        match('*');
+    match('*');
 
-        factor();
+    factor();
 
-       emit("POP BX");
+    emit("POP BX");
 
-        emit("IMUL BX");
+    emit("IMUL BX");
 
 }
 
@@ -402,17 +411,17 @@ void divide()
 
 {
 
-        match('/');
+    match('/');
 
-        factor();
+    factor();
 
-       emit("POP BX");
+    emit("POP BX");
 
-        emit("XCHG AX, BX");
+    emit("XCHG AX, BX");
 
-        emit("CWD");
+    emit("CWD");
 
-        emit("IDIV BX");
+    emit("IDIV BX");
 
 }
 
@@ -424,29 +433,31 @@ void term()
 
 {
 
- factor();
+    factor();
 
- while (look == '*' || look == '/') {
+    while (look == '*' || look == '/')
+    {
 
-  emit("PUSH AX");
+        emit("PUSH AX");
 
-  switch(look) {
+        switch(look)
+        {
 
-    case '*':
+        case '*':
 
-     multiply();
+            multiply();
 
-     break;
+            break;
 
-    case '/':
+        case '/':
 
-     divide();
+            divide();
 
-     break;
+            break;
 
-  }
+        }
 
- }
+    }
 
 }
 
@@ -458,13 +469,13 @@ void add()
 
 {
 
-        match('+');
+    match('+');
 
-        term();
+    term();
 
-        emit("POP BX");
+    emit("POP BX");
 
-        emit("ADD AX, BX");
+    emit("ADD AX, BX");
 
 }
 
@@ -476,15 +487,15 @@ void subtract()
 
 {
 
-        match('-');
+    match('-');
 
-        term();
+    term();
 
-        emit("POP BX");
+    emit("POP BX");
 
-        emit("SUB AX, BX");
+    emit("SUB AX, BX");
 
-        emit("NEG AX");
+    emit("NEG AX");
 
 }
 
@@ -496,35 +507,37 @@ void expression()
 
 {
 
-        if (isAddOp(look))
+    if (isAddOp(look))
 
-                emit("XOR AX, AX");
+        emit("XOR AX, AX");
 
-        else
+    else
 
-         term();
+        term();
 
- while (isAddOp(look)) {
+    while (isAddOp(look))
+    {
 
-  emit("PUSH AX");
+        emit("PUSH AX");
 
-  switch(look) {
+        switch(look)
+        {
 
-    case '+':
+        case '+':
 
-     add();
+            add();
 
-     break;
+            break;
 
-    case '-':
+        case '-':
 
-     subtract();
+            subtract();
 
-     break;
+            break;
 
-  }
+        }
 
- }
+    }
 
 }
 
@@ -536,14 +549,14 @@ void assignment()
 
 {
 
- char name[MAXNAME+1];
+    char name[MAXNAME+1];
 
- getName(name);
+    getName(name);
 
- match('=');
+    match('=');
 
- expression();
+    expression();
 
- emit("MOV [%s], AX", name);
+    emit("MOV [%s], AX", name);
 
 }

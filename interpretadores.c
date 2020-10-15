@@ -12,6 +12,9 @@ Este código é de livre distribuição e uso.
 #include <stdlib.h>
 #include <stdarg.h>
 #include <ctype.h>
+#define MAXVAR 26
+
+int var[MAXVAR];
 
 char look; /* O caracter lido "antecipadamente" (lookahead) */
 
@@ -23,13 +26,39 @@ void fatal(char *fmt, ...);
 void expected(char *fmt, ...);
 void match(char c);
 char getName();
-char getNum();
+int getNum();
 void emit(char *fmt, ...);
+int expression();
+int term();
+int isAddOp(char c);
+int factor();
+void initVar();
+void input();
+void output();
+void newLine();
+void assignment();
 
 /* PROGRAMA PRINCIPAL */
 int main()
 {
     init();
+    do
+    {
+        switch (look)
+        {
+        case '?':
+            input();
+            break;
+        case '!':
+            output();
+            break;
+        default:
+            assignment();
+            break;
+        }
+        newLine();
+    }
+    while (look != '.');
 
     return 0;
 }
@@ -37,6 +66,7 @@ int main()
 /* inicialização do compilador */
 void init()
 {
+    init();
     nextChar();
 }
 
@@ -114,16 +144,23 @@ char getName()
 }
 
 /* recebe um número inteiro */
-char getNum()
+int getNum()
 {
-    char num;
+    int i;
+
+    i = 0;
 
     if (!isdigit(look))
         expected("Integer");
-    num = look;
-    nextChar();
 
-    return num;
+    while (isdigit(look))
+    {
+        i *= 10;
+        i += look - '0';
+        nextChar();
+    }
+
+    return i;
 }
 
 /* emite uma instrução seguida por uma nova linha */
@@ -139,3 +176,133 @@ void emit(char *fmt, ...)
 
     putchar('\n');
 }
+
+/* avalia o resultado de uma expressão */
+int expression()
+{
+    int val;
+
+    if (isAddOp(look))
+        val = 0;
+    else
+        val = term();
+
+    while (isAddOp(look))
+    {
+        switch (look)
+        {
+        case '+':
+            match('+');
+            val += term();
+            break;
+        case '-':
+            match('-');
+            val -= term();
+            break;
+        }
+    }
+
+    return val;
+}
+
+/* avalia um termo */
+int term()
+{
+    int val;
+
+    val = factor();
+    while (isAddOp(look))
+    {
+        switch (look)
+        {
+        case '*':
+            match('*');
+            val *= factor();
+            break;
+        case '/':
+            match('/');
+            val /= factor();
+            break;
+        }
+    }
+
+    return val;
+}
+
+/* reconhece operador aditivo */
+
+int isAddOp(char c)
+{
+
+    return (c == '+' || c == '-');
+
+}
+
+/* avalia um fator */
+int factor()
+{
+    int val;
+
+    if (look == '(')
+    {
+        match('(');
+        val = expression();
+        match(')');
+    }
+    else if (isalpha(look))
+        val = var[getName() - 'A'];
+    else
+        val = getNum();
+
+    return val;
+}
+
+/* inicializa variáveis */
+void initVar()
+{
+    int i;
+
+    for (i = 0; i < MAXVAR; i++)
+        var[i] = 0;
+}
+
+/* interpreta um comando de entrada */
+void input()
+{
+    char name;
+    char buffer[20];
+
+    match('?');
+    name = getName();
+    printf("%c? ", name);
+    fgets(buffer, 20, stdin);
+    var[name - 'A'] = atoi(buffer);
+}
+
+/* interpreta um comando de saída */
+void output()
+{
+    char name;
+
+    match("!");
+    name = getName();
+    printf("%c -> %d", name, var[name - 'A']);
+}
+
+/* captura um caracter de nova linha */
+void newLine()
+{
+    if (look == '\n')
+        nextChar();
+}
+
+/* avalia um comando de atribuição */
+void assignment()
+{
+    char name;
+
+    name = getName();
+    match('=');
+    var[name - 'A'] = expression();
+}
+
